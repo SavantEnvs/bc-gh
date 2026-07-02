@@ -1,0 +1,16 @@
+project: savantenvs/bc-gh
+# dc_fuzzer (from src/dc_fuzzer.c) — feeds the whole input as a dc PROGRAM to dc_main(): the real
+# dc RPN lexer, parser, and arbitrary-precision interpreter. Input is dc source text, not a file
+# path. Built with BC_ENABLE_OSSFUZZ=1 (stdin/tty machinery elided) + EXPR_EXIT off.
+target: dc_fuzzer
+
+# Per-target starter seeds + server-side corpus accumulation — the one sanctioned two-entry form
+# (docs/seed-corpus.md). Comment stays on its OWN line above the key (an inline comment on the
+# testsuite: key line aborts run-creation on the CI runner).
+testsuite:
+  - https://$MAYHEM_DOMAIN/$MAYHEM_PROJECT/$MAYHEM_TARGET/testsuite.tar
+  - file://mayhem/dc_fuzzer/testsuite
+
+cmds:
+  - cmd: /mayhem/dc_fuzzer
+    libfuzzer: true
